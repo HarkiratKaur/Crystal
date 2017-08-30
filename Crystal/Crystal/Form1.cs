@@ -16,6 +16,8 @@ namespace Crystal
     public partial class Form1 : Form
     {
         SpeechRecognitionEngine recognizer = new SpeechRecognitionEngine(new System.Globalization.CultureInfo("en-US"));
+        SpeechSynthesizer speech = new SpeechSynthesizer();
+        
         public Form1()
         {
             InitializeComponent();
@@ -23,8 +25,10 @@ namespace Crystal
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            speech.SelectVoice("Microsoft Zira Desktop");
             Choices ch = new Choices();
             ch.Add("Hello");
+            ch.Add("youtube");
             GrammarBuilder gbuilder = new GrammarBuilder();
             gbuilder.Append(ch);
             Grammar grammer = new Grammar(gbuilder);
@@ -41,9 +45,8 @@ namespace Crystal
             if (e.Result.Text == "Hello")
             {
                 ArrayList list = new ArrayList();
-                using (SpeechSynthesizer speech = new SpeechSynthesizer())
-                {
-
+                
+                    
                     foreach (InstalledVoice voice in speech.GetInstalledVoices())
                     {
                         VoiceInfo info = voice.VoiceInfo;
@@ -51,16 +54,44 @@ namespace Crystal
                     }
 
                     speech.SetOutputToDefaultAudioDevice();
-                    speech.Speak("I am Sorry Rattu. Please Dont be angry on me. I was simply fighting with you. And you know what, my rattu is very very good girl. please dont say that she is bad.");
-                }
+                    speech.Speak("hello");
+                
             }
+
+            else if (e.Result.Text=="youtube")
+            {
+                speech.Speak("Opening youtube!!!");
+                System.Diagnostics.Process.Start("http://youtube.com");
+            }
+
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            label1.Visible = true;
-            button1.Enabled = false;
-            recognizer.RecognizeAsync(RecognizeMode.Multiple);
+                                 
+           if(button1.Text.ToUpper()=="START")
+            {
+                speech.Speak("Starting Speech Recognizer");
+                button1.Text = "STOP";
+                recognizer.RecognizeAsync(RecognizeMode.Multiple);
+                
+            }
+           else
+            {
+                speech.Speak("Stoping Speech Recognizer");
+                button1.Text = "START";
+                recognizer.RecognizeAsyncStop();
+                
+            }
+        }
+
+        
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            recognizer.Dispose();
+            speech.Dispose();
+            Application.Exit();
         }
     }
 }
